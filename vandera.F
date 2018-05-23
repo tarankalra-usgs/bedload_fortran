@@ -135,7 +135,7 @@
      &                                            RR, uhat, ahat,       &
      &                                                umax, umin,       &
      &                                      T_c, T_t, T_cu, T_tu,       &
-     &                                  eta, udelta, fd, ksw, tau_wRe )
+     &                           eta, udelta, alpha, fd, ksw, tau_wRe )
 !
       write(iunit,*)"****************************************"
       write(iunit,*)" Full-wave cycle output"
@@ -200,7 +200,6 @@
       write(iunit,*) "Magnitude of Shields par.", mag_theta_t
       write(iunit,*) "Sheet flow thickness (m)", dsf_t
       write(iunit,*)"****************************************"
-      print*, "theta_c/theta_t",mag_theta_c/mag_theta_t
 !
 !-----------------------------------------------------------------------
 ! 3. Compute sediment load entrained during each trough half cycle
@@ -310,6 +309,7 @@
         w_sc_eta=MAX(w_s-ws_eta,0.36*w_s)
         w_sc_dsf=MAX(w_s-ws_dsf,0.36*w_s)
       ENDIF 
+      print*,"w_s",w_s, "w_sc_dsf",w_sc_dsf      
 !
 ! VA2013 Equation 33, Phase lag parameter
 !
@@ -339,8 +339,8 @@
         ENDIF 
       ENDIF 
 !
-      write(6,*)"P=",P
-      eps_eff=(dsf/d50)**0.25_r8 
+!      eps_eff=(dsf/d50)**0.25_r8 
+      eps_eff=1.0_r8
       theta_ieff=eps_eff*mag_theta_i
 ! 
 ! Find critical Shields parameters based on Soulsby (1997).
@@ -421,7 +421,7 @@
      &                                            RR, uhat, ahat,       &
      &                                                umax, umin,       &
      &                                      T_c, T_t, T_cu, T_tu,       &
-     &                                  eta, udelta, fd, ksw, tau_wRe) 
+     &                         eta, udelta, alpha, fd, ksw, tau_wRe) 
 !
 !**********************************************************************
 !  This subroutine returns the following:
@@ -529,7 +529,6 @@
         ENDIF
         theta_timeavg_old=theta_timeavg 
       END DO 
-      print*, theta_timeavg
 !
 ! Calculate wave Reynolds stress from full cycle wave and friction factor
 ! that were formed from the iterative cycle, VA2013, Eqn.22
@@ -607,6 +606,7 @@
 ! Different for crest and trough 
 !
       fwd_i=alpha*fd+(1.0_r8-alpha)*fw_i
+      write(6,*), "alpha", alpha, "fw_i", fw_i
 !
 ! VA2013-Magnitude of Shields parameter Eqn. 17
 ! 
@@ -616,7 +616,6 @@
 ! Update from initial value 
 !
       dsf=dsf_calc(d50, theta_hat_i) !this dsf is in m 
-      print*, "dsf=",dsf
 !
 ! Calculated the velocity magnitude based on representative velocities
 !  equation 12 from Van der A, 2013 
@@ -1072,7 +1071,6 @@
 !      H_s=sqrt(2.0_r8)*H_rms
       a_w=0.5_r8*H_s 
       Ur=0.75_r8*a_w*k_wn/((k_wn*depth)**3.0_r8)
-      print*, "Ur",Ur
 !
 ! Ruessink et al., 2012 Equation 9.
 !
