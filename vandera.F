@@ -38,7 +38,7 @@
       real(r8) :: bedld_x, bedld_y
      
       real(r8) :: wavecycle 
-      real(r8) :: Zref
+      real(r8) :: Zref, delta
 !            
 !     Input wave parameters 
 !     Hs=significant wave height
@@ -51,7 +51,10 @@
       d50 = 0.245e-3
       d90 = 1.3_r8*d50 
       rhos= 2650.0_r8
+! Zref is a reference height for computing current friction factor 
       Zref=0.04_r8
+! delta is the reference height at which current velocity is computed (Wave boundary layer thickness) 
+      delta=0.2_r8
 !
 ! umag_curr is the current velocity magnitude (MAKE Sure its the magnitude)
 ! direction of currents is counter-clockwise from wave direction
@@ -131,7 +134,8 @@
 ! 
       CALL full_wave_cycle_stress_factors( d50, d90, osmgd,             &
      &                                                 Td, depth,       &
-     &                              umag_curr, phi_curwave, Zref,       &
+     &                                    umag_curr, phi_curwave,       &
+     &                                              Zref,  delta,       &
      &                                            RR, uhat, ahat,       &
      &                                                umax, umin,       &
      &                                      T_c, T_t, T_cu, T_tu,       &
@@ -309,7 +313,6 @@
         w_sc_eta=MAX(w_s-ws_eta,0.36*w_s)
         w_sc_dsf=MAX(w_s-ws_dsf,0.36*w_s)
       ENDIF 
-      print*,"w_s",w_s, "w_sc_dsf",w_sc_dsf      
 !
 ! VA2013 Equation 33, Phase lag parameter
 !
@@ -417,7 +420,8 @@
 !
       SUBROUTINE full_wave_cycle_stress_factors( d50, d90, osmgd,       &
      &                                                 Td, depth,       &
-     &                              umag_curr, phi_curwave, Zref,       &
+     &                              umag_curr, phi_curwave,             &
+     &                                            Zref,  delta,         &
      &                                            RR, uhat, ahat,       &
      &                                                umax, umin,       &
      &                                      T_c, T_t, T_cu, T_tu,       &
@@ -444,7 +448,7 @@
 !       
       real(r8), intent(in) :: d50, d90, osmgd
       real(r8), intent(in) :: Td, depth
-      real(r8), intent(in) :: umag_curr, phi_curwave, Zref 
+      real(r8), intent(in) :: umag_curr, phi_curwave, Zref, delta 
       real(r8), intent(in) :: RR, uhat, ahat
       real(r8), intent(in) :: umax, umin
       real(r8), intent(inout) :: T_c, T_t, T_cu, T_tu
@@ -517,7 +521,7 @@
 !
         fd=fd_calc(umag_curr, Zref, ksd)
         ustarc=SQRT(0.5_r8*fd)*umag_curr;  !    %friction velocity [m/s]
-        udelta=ustarc/(0.4_r8*log(30.0_r8*Zref/ksd));
+        udelta=ustarc/(0.4_r8*log(30.0_r8*delta/ksd));
 !
 ! Calculate Time-averaged absolute Shields stress VA2013 Appendix Eq. A.3
 ! 
@@ -606,7 +610,6 @@
 ! Different for crest and trough 
 !
       fwd_i=alpha*fd+(1.0_r8-alpha)*fw_i
-      write(6,*), "alpha", alpha, "fw_i", fw_i
 !
 ! VA2013-Magnitude of Shields parameter Eqn. 17
 ! 
