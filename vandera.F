@@ -727,7 +727,7 @@
 !
       real(r8) :: unet_xdir, udelta, delt
 !
-      unet_xdir=unet*cos(phi_curwave/180*pi);
+      unet_xdir=unet*COS(phi_curwave)
 
       IF(RR.eq.0.5_r8) THEN
         T_c=0.5_r8*Td
