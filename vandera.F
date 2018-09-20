@@ -45,10 +45,10 @@
 !     Td=dominant wave period 
 !     depth=water depth(m)
 !   
-      Hs = 1.6_r8
-      Td = 6.5_r8
-      depth =3.5_r8
-      d50 = 0.245e-3
+      Td = 10.0_r8
+      Hs = 0.3_r8
+      depth =6.0_r8
+      d50 = 0.0005
       d90 = 1.3_r8*d50 
       rhos= 2650.0_r8
 ! Zref is a reference height for computing current friction factor 
@@ -59,12 +59,12 @@
 ! umag_curr is the current velocity magnitude (MAKE Sure its the magnitude)
 ! direction of currents is counter-clockwise from wave direction
 !
-      umag_curr=0.0_r8! ABS(0.5_r8)
+      umag_curr=0.2155_r8! ABS(0.5_r8)
       phi_curwave=0.0_r8*deg2rad
 !
 ! uhat and ahat for the entire wave cycle  uhat is the wave orbital velocity defiend for the entire wave cycle
 !
-      urms=0.65_r8 
+      urms=0.3_r8 
       uhat=SQRT(2.0_r8)*urms !0.5472_r8           
 !
       ahat=uhat*Td/(2.0_r8*pi)
@@ -521,7 +521,7 @@
 !
         fd=fd_calc(umag_curr, Zref, ksd)
         ustarc=SQRT(0.5_r8*fd)*umag_curr;  !    %friction velocity [m/s]
-        udelta=ustarc/(0.4_r8*log(30.0_r8*delta/ksd));
+        udelta=(ustarc/0.4_r8)*log(30.0_r8*delta/ksd);
 !
 ! Calculate Time-averaged absolute Shields stress VA2013 Appendix Eq. A.3
 ! 
@@ -554,7 +554,7 @@
 !
 ! Calculate the effect of surface waves 
 !
-!     CALL surface_wave_mod(Td, depth, uhat, T_c, T_cu, T_t, T_tu)
+      CALL surface_wave_mod(Td, depth, uhat, T_c, T_cu, T_t, T_tu)
 ! 
       END SUBROUTINE full_wave_cycle_stress_factors
 !
@@ -728,7 +728,6 @@
       real(r8) :: unet_xdir, udelta, delt
 !
       unet_xdir=unet*COS(phi_curwave)
-
       IF(RR.eq.0.5_r8) THEN
         T_c=0.5_r8*Td
         T_t=0.5_r8*Td
